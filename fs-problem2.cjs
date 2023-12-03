@@ -1,11 +1,17 @@
 const fs = require("fs");
-function userFsProblem2() {
-  readingLipsumFile("./lipsum.txt")
+const UPPER_TEXT_PATH = "upper.txt";
+const LOWER_TXT_PATH = "lower.txt";
+const SORT_TXT_PATH = "sorting.txt";
+
+function userFsProblem2(LIPSUM_FILE) {
+  readingLipsumFile(LIPSUM_FILE)
     .then((data) => convertingToUpperCase(data))
     .then((upperData) => upperToLowerCaseToSentense(upperData))
     .then((filePath) => readingAndSorting(filePath))
     .then((filenamePath) => deleteFiles(filenamePath))
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      throw new Error(`${err.message}`);
+    });
 }
 // reading lipsum.txt file
 function readingLipsumFile(filepath) {
@@ -24,11 +30,11 @@ function readingLipsumFile(filepath) {
 function convertingToUpperCase(data) {
   return new Promise((resolve, reject) => {
     const upperData = data.toUpperCase();
-    fs.writeFile("./upper.txt", upperData, (err) => {
+    fs.writeFile(UPPER_TEXT_PATH, upperData, (err) => {
       if (err) {
         reject(err);
       } else {
-        fs.writeFile("./filename.txt", "upper.txt", (err) => {
+        fs.writeFile("./filename.txt", UPPER_TEXT_PATH, (err) => {
           if (err) {
             reject(err);
           } else {
@@ -45,16 +51,16 @@ function upperToLowerCaseToSentense(upperData) {
   return new Promise((resolve, reject) => {
     const lowerData = upperData.toLowerCase();
     const sentence = lowerData.split(".").join("\n").trim();
-    fs.writeFile("./lower.txt", sentence, (err) => {
+    fs.writeFile(LOWER_TXT_PATH, sentence, (err) => {
       if (err) {
         reject(err);
       } else {
-        fs.appendFile("./filename.txt", "\nlower.txt", (err) => {
+        fs.appendFile("./filename.txt", `\n${LOWER_TXT_PATH}`, (err) => {
           if (err) {
             resolve(err);
           } else {
             console.log("upper to lower and then into sentence ");
-            resolve("./lower.txt");
+            resolve(LOWER_TXT_PATH);
           }
         });
       }
@@ -70,11 +76,11 @@ function readingAndSorting(filePath) {
           reject(err);
         } else {
           const sort = sentences.split("\n").sort().join("\n");
-          fs.writeFile("./sorting.txt", sort, (err) => {
+          fs.writeFile(SORT_TXT_PATH, sort, (err) => {
             if (err) {
               reject(err);
             } else {
-              fs.appendFile("./filename.txt", "\nsorting.txt", (err) => {
+              fs.appendFile("./filename.txt", `\n${SORT_TXT_PATH}`, (err) => {
                 if (err) {
                   reject(err);
                 } else {
@@ -98,7 +104,7 @@ function deleteFiles(filenamePath) {
         if (err) {
           reject(err);
         } else {
-          data.split("\n").forEach((path) => {
+          const a = data.split("\n").map((path) => {
             fs.unlink(path, (err) => {
               if (err) {
                 reject(err);

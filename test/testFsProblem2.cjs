@@ -1,3 +1,3 @@
 const userFsProblem2 = require("../fs-problem2.cjs");
-
-userFsProblem2();
+const LIPSUM_FILE = "./lipsum.txt";
+userFsProblem2(LIPSUM_FILE);
